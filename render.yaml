@@ -9,6 +9,6 @@ services:
       - key: GROQ_API_KEY
         sync: false
       - key: FRONTEND_URL
-        sync: false
+        value: https://ai-10012200058.vercel.app
       - key: PORT
         value: 5000
