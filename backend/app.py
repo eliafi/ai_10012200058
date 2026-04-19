@@ -17,27 +17,26 @@ app = Flask(__name__)
 _allowed = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    r"https://.*\.vercel\.app",
+    "https://ai-10012200058.vercel.app",
 ]
 if os.getenv("FRONTEND_URL"):
     _allowed.append(os.getenv("FRONTEND_URL"))
 CORS(app, origins=_allowed)
 
-_pipeline = None
 LOGS_DIR = Path(os.path.join(os.path.dirname(__file__), "..", "logs"))
+
+# Eager-load pipeline at startup so first request isn't slow
+from rag_pipeline import RAGPipeline
+_api_key = os.getenv("GROQ_API_KEY")
+if not _api_key:
+    raise RuntimeError("GROQ_API_KEY environment variable not set.")
+logger.info("Initialising RAG pipeline...")
+_pipeline = RAGPipeline(groq_api_key=_api_key)
+_pipeline.load_index()
+logger.info("RAG pipeline ready.")
 
 
 def get_pipeline():
-    global _pipeline
-    if _pipeline is None:
-        from rag_pipeline import RAGPipeline
-        api_key = os.getenv("GROQ_API_KEY")
-        if not api_key:
-            raise RuntimeError("GROQ_API_KEY environment variable not set.")
-        logger.info("Initialising RAG pipeline (lazy load)...")
-        _pipeline = RAGPipeline(groq_api_key=api_key)
-        _pipeline.load_index()
-        logger.info("RAG pipeline ready.")
     return _pipeline
 
 
