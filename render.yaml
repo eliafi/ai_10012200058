@@ -2,6 +2,7 @@ services:
   - type: web
     name: acity-rag-backend
     env: python
+    runtime: python3.11
     buildCommand: "pip install -r backend/requirements.txt && python backend/setup.py"
     startCommand: "python backend/app.py"
     envVars:
