@@ -199,6 +199,14 @@ export default function Page() {
             </div>
           </div>
         </div>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        {!isEmpty && (
+          <button onClick={() => setMessages([])} style={{
+            padding: "8px 18px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer",
+            border: "1px solid #2d2460", background: "rgba(255,255,255,0.04)",
+            color: "#6b7280", transition: "all 0.2s",
+          }}>New Chat</button>
+        )}
         <button onClick={() => setCompareMode(v => !v)} style={{
           padding: "8px 18px", borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: "pointer",
           border: compareMode ? "1px solid #7c3aed" : "1px solid #2d2460",
@@ -208,6 +216,7 @@ export default function Page() {
         }}>
           {compareMode ? "⚡ Compare ON" : "Compare Mode"}
         </button>
+        </div>
       </div>
 
       {/* Empty state — hero */}
