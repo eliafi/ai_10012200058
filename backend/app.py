@@ -14,7 +14,11 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-_allowed = ["http://localhost:3000", "http://127.0.0.1:3000"]
+_allowed = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    r"https://.*\.vercel\.app",
+]
 if os.getenv("FRONTEND_URL"):
     _allowed.append(os.getenv("FRONTEND_URL"))
 CORS(app, origins=_allowed)
