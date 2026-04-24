@@ -3,7 +3,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { chatQuery, compareQuery, sendFeedback, type Source, type CompareResponse } from "@/lib/api";
+import { chatQuery, compareQuery, sendFeedback, healthCheck, type Source, type CompareResponse } from "@/lib/api";
 
 const SUGGESTIONS = [
   "Who won the 2020 Ghana election?",
@@ -127,11 +127,17 @@ export default function Page() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [compareMode, setCompareMode] = useState(false);
+  const [serverReady, setServerReady] = useState<boolean | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // Ping the backend on mount so Render wakes up before the user sends their first message
+  useEffect(() => {
+    healthCheck().then(ok => setServerReady(ok));
+  }, []);
 
   function buildContextualQuestion(q: string, history: Message[]): string {
     const recent = history.slice(-4);
@@ -191,7 +197,7 @@ export default function Page() {
             background: "linear-gradient(135deg,#7c3aed,#3b82f6)",
           }}>🪃</div>
           <div>
-            <div style={{ color: "#fff", fontWeight: 700, fontSize: 17, fontFamily: "'Playfair Display', serif" }}>
+            <div style={{ color: "#fff", fontWeight: 700, fontSize: 17, fontFamily: "var(--font-playfair), serif" }}>
               Sankofa AI
             </div>
             <div style={{ color: "#6b7280", fontSize: 11, marginTop: 1 }}>
@@ -219,6 +225,20 @@ export default function Page() {
         </div>
       </div>
 
+      {/* Server wake-up banner */}
+      {serverReady === null && (
+        <div style={{
+          background: "rgba(124,58,237,0.12)", borderBottom: "1px solid #3730a3",
+          padding: "8px 28px", display: "flex", alignItems: "center", gap: 8,
+        }}>
+          <span style={{ display: "inline-block", width: 8, height: 8, borderRadius: "50%",
+            background: "#f59e0b", animation: "pulse 1.2s ease-in-out infinite" }} />
+          <span style={{ color: "#a78bfa", fontSize: 12 }}>
+            Waking up backend server — this may take up to 30 s on first load…
+          </span>
+        </div>
+      )}
+
       {/* Empty state — hero */}
       {isEmpty && (
         <div style={{
@@ -234,7 +254,7 @@ export default function Page() {
 
           <h1 style={{
             color: "#fff", fontSize: 32, fontWeight: 700, marginBottom: 8, textAlign: "center",
-            fontFamily: "'Playfair Display', serif",
+            fontFamily: "var(--font-playfair), serif",
           }}>Ask me anything</h1>
 
           <p style={{ color: "#6b7280", fontSize: 14, marginBottom: 36, textAlign: "center" }}>

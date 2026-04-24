@@ -78,3 +78,12 @@ export async function getFeedbackStats(): Promise<FeedbackStats> {
   const res = await fetch(`${API_URL}/api/feedback/stats`);
   return res.json();
 }
+
+export async function healthCheck(): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_URL}/health`, { signal: AbortSignal.timeout(60000) });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
