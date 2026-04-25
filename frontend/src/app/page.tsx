@@ -134,9 +134,12 @@ export default function Page() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  // Ping the backend on mount so Render wakes up before the user sends their first message
+  // Ping the backend on mount so Render wakes up before the user sends their first message,
+  // then keep it alive with a ping every 6 minutes (Render free tier sleeps after 15 min).
   useEffect(() => {
     healthCheck().then(ok => setServerReady(ok));
+    const keepAlive = setInterval(() => healthCheck(), 6 * 60 * 1000);
+    return () => clearInterval(keepAlive);
   }, []);
 
   function buildContextualQuestion(q: string, history: Message[]): string {
